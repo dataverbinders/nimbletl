@@ -1,0 +1,37 @@
+name: nimbletl
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - bokeh
+  - click
+  - dask
+  - google-auth
+  - google-cloud-core
+  - google-cloud-bigquery
+  - google-cloud-storage
+  - lxml
+  - nomkl
+  - numpy
+  - pandas >=1.0.0
+  - pandas-gbq
+  - pip
+  - prefect[google]
+  - pip:
+      - dataclasses_jsonschema
+      - simpy
+      - xmltodict
+  - python >=3.8.0 # using dataclasess (3.7) and zipfile.Path (3.8)
+  - pyyaml
+  - requests
+  - scikit-learn
+  - scipy
+  - sqlalchemy
+
+  # packages for development, no separate dev option in conda
+  - black
+  - flake8
+  - ipykernel
+  - ipython
+  - pytest
+  
