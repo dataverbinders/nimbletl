@@ -1,0 +1,283 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nimbletl.gis &#8212; nimbletl 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for nimbletl.gis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Helper functions for geocoding and coordinate conversions.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">enumerate</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<div class="viewcode-block" id="get_RDXY"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.gis.get_RDXY">[docs]</a><span class="k">def</span> <span class="nf">get_RDXY</span><span class="p">(</span><span class="n">postcode</span><span class="p">,</span> <span class="n">huisnummer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetches X, Y Rijksdriehoek coordinates from BAG.</span>
+
+<span class="sd">    postcode:   Dutch zipcode in format &#39;1234AB&#39;</span>
+<span class="sd">    huisnmmmer: house number, without any additions</span>
+
+<span class="sd">    https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">URL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/BAGv2/MapServer/0/query?where=huisnummer%3D%27</span><span class="si">{</span><span class="n">huisnummer</span><span class="si">}</span><span class="s2">%27+AND+postcode+%3D+%27</span><span class="si">{</span><span class="n">postcode</span><span class="si">}</span><span class="s2">%27&amp;text=&amp;objectIds=&amp;time=&amp;geometry=&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;relationParam=&amp;outFields=&amp;returnGeometry=true&amp;returnTrueCurves=false&amp;maxAllowableOffset=&amp;geometryPrecision=&amp;outSR=28992&amp;having=&amp;returnIdsOnly=false&amp;returnCountOnly=false&amp;orderByFields=&amp;groupByFieldsForStatistics=&amp;outStatistics=&amp;returnZ=false&amp;returnM=false&amp;gdbVersion=&amp;historicMoment=&amp;returnDistinctValues=false&amp;resultOffset=&amp;resultRecordCount=&amp;queryByDistance=&amp;returnExtentOnly=false&amp;datumTransformation=&amp;parameterValues=&amp;rangeValues=&amp;quantizationParameters=&amp;featureEncoding=esriDefault&amp;f=pjson&quot;</span>
+    <span class="n">get_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">postcode</span><span class="o">=</span><span class="n">postcode</span><span class="p">,</span> <span class="n">huisnummer</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">huisnummer</span><span class="p">)))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;features&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<span class="c1"># Can&#39;t access API reference, so don&#39;t know how to code proper POST request</span>
+<span class="c1">#</span>
+<span class="c1"># def test(postcode, huisnummer):</span>
+<span class="c1">#     URL = &quot;https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/BAGv2/MapServer/0/query&quot;</span>
+<span class="c1">#     query = {&#39;postcode&#39;: postcode,</span>
+<span class="c1">#     &#39;huisnummer&#39;: huisnummer,</span>
+<span class="c1">#     &#39;GeometryType&#39;: &#39;esriGeometryEnvelope&#39;,</span>
+<span class="c1">#     &#39;outSR&#39;: &#39;28992&#39;,</span>
+<span class="c1">#     &#39;featureEncoding&#39;: &#39;esriDefault&#39;,</span>
+<span class="c1">#     &#39;f&#39;: &#39;pjson&#39;</span>
+<span class="c1">#     }</span>
+<span class="c1">#     print(json.dumps(query))</span>
+<span class="c1">#     response = requests.request(&#39;POST&#39;, URL, data=json.dumps(query))</span>
+<span class="c1"># print(response.json())</span>
+
+
+
+<div class="viewcode-block" id="RDWGS84Converter"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.gis.RDWGS84Converter">[docs]</a><span class="k">class</span> <span class="nc">RDWGS84Converter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The formulas in this class were based on a white paper by ing. F.H. Schreutelkamp from &quot;Stichting De Koepel&quot; and</span>
+<span class="sd">    ir. G.L. Strang van Hees, former scholar at TU Delft.</span>
+<span class="sd">    Unfortunately, as of January 1st 2014, the foundation &quot;De Koepel&quot; has halted all their activities and suspended their</span>
+<span class="sd">    website. As the original article can no longer be found on the website, I&#39;ve made sure to host a backup of it at:</span>
+<span class="sd">    http://media.thomasv.nl/2015/07/Transformatieformules.pdf (in Dutch). Please consult this white paper for the origin</span>
+<span class="sd">    of the coefficients used below.</span>
+<span class="sd">    I take no credit for the formulas used, all I have done was convert the formulas into an easy to work with Python</span>
+<span class="sd">    class for usage in other projects. All credit for the formulas go to F.H. Schreutelkamp and G.L. Strang van Hees.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x0</span> <span class="o">=</span> <span class="mi">155000</span>
+    <span class="n">y0</span> <span class="o">=</span> <span class="mi">463000</span>
+    <span class="n">phi0</span> <span class="o">=</span> <span class="mf">52.15517440</span>
+    <span class="n">lam0</span> <span class="o">=</span> <span class="mf">5.38720621</span>
+
+    <span class="c1"># Coefficients or the conversion from RD to WGS84</span>
+    <span class="n">Kp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">Kq</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">Kpq</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mf">3235.65389</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">32.58297</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.24750</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.84978</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.06550</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.01709</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.00738</span><span class="p">,</span>
+        <span class="mf">0.00530</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.00039</span><span class="p">,</span>
+        <span class="mf">0.00033</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.00012</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">Lp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="n">Lq</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Lpq</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mf">5260.52916</span><span class="p">,</span>
+        <span class="mf">105.94684</span><span class="p">,</span>
+        <span class="mf">2.45656</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.81885</span><span class="p">,</span>
+        <span class="mf">0.05594</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.05607</span><span class="p">,</span>
+        <span class="mf">0.01199</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.00256</span><span class="p">,</span>
+        <span class="mf">0.00128</span><span class="p">,</span>
+        <span class="mf">0.00022</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.00022</span><span class="p">,</span>
+        <span class="mf">0.00026</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="c1"># Coefficients for the conversion from WGS84 to RD</span>
+    <span class="n">Rp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">Rq</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="n">Rpq</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mf">190094.945</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">11832.228</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">114.221</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">32.391</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.705</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">2.340</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.608</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.008</span><span class="p">,</span>
+        <span class="mf">0.148</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">Sp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">Sq</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="n">Spq</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mf">309056.544</span><span class="p">,</span>
+        <span class="mf">3638.893</span><span class="p">,</span>
+        <span class="mf">73.077</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">157.984</span><span class="p">,</span>
+        <span class="mf">59.788</span><span class="p">,</span>
+        <span class="mf">0.433</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">6.439</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.032</span><span class="p">,</span>
+        <span class="mf">0.092</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.054</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<div class="viewcode-block" id="RDWGS84Converter.from_rd"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.gis.RDWGS84Converter.from_rd">[docs]</a>    <span class="k">def</span> <span class="nf">from_rd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts RD coordinates into WGS84 coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="mf">1e-5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x0</span><span class="p">)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="mf">1e-5</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y0</span><span class="p">)</span>
+        <span class="n">latitude</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">phi0</span>
+            <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">v</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Kq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kpq</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="mi">3600</span>
+        <span class="p">)</span>
+        <span class="n">longitude</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lam0</span>
+            <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">v</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Lpq</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="mi">3600</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span></div>
+
+    <span class="c1"># https://github.com/thomasvnl/rd-to-wgs84</span>
+<div class="viewcode-block" id="RDWGS84Converter.from_wgs84"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.gis.RDWGS84Converter.from_wgs84">[docs]</a>    <span class="k">def</span> <span class="nf">from_wgs84</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts WGS84 coordinates into RD coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dlat</span> <span class="o">=</span> <span class="mf">0.36</span> <span class="o">*</span> <span class="p">(</span><span class="n">latitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi0</span><span class="p">)</span>
+        <span class="n">dlon</span> <span class="o">=</span> <span class="mf">0.36</span> <span class="o">*</span> <span class="p">(</span><span class="n">longitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lam0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">v</span> <span class="o">*</span> <span class="n">dlat</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Rp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dlon</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Rq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Rpq</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y0</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">v</span> <span class="o">*</span> <span class="n">dlat</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dlon</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Spq</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">nimbletl</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">nimbletl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">nimbletl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Daniel Kapitan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
