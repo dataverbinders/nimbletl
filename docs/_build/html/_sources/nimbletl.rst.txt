@@ -28,6 +28,14 @@ nimbletl.tasks module
     :undoc-members:
     :show-inheritance:
 
+nimbletl.utilities module
+-------------------------
+
+.. automodule:: nimbletl.utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

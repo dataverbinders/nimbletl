@@ -1,44 +1,70 @@
-"""Module with prefects utilities tasks."""
+"""
+Module with prefects utility functions and tasks.
+
+Use `prefect.task` to a function into a task in your dataflow pipeline, for example:
+
+```python
+unzip_task = task(unzip)
+```
+"""
 
 import datetime
 from pathlib import Path
+from typing import Union, Any
 from zipfile import ZipFile
 
 from prefect import task
+from prefect.utilities.tasks import defaults_from_attrs
 from prefect.engine.signals import SKIP
 from prefect.tasks.shell import ShellTask
 
 
-@task
-def curl_cmd(url: str, file: str) -> str:
+class CurlDownloadTask(ShellTask):
     """
-    Generate the curl command for downloading url to file.
+    Task for downloading file using curl.
 
     Uses `curl -fL -o` that fails silently and follows redirects. 
 
     Args:
         - url (str): url to download
         - file (str): file for saving fecthed url
+        - **kwargs: additional keyword arguments to pass to the ShellTask constructor
 
     Returns:
-        str: curl cmd
+        - Path: path to downloaded file
     
     Raises:
         - SKIP: if file exists
     """
-    if Path(file).exists():
-        raise SKIP("File already exists.")
-    return f"curl -fL -o {file} {url}"
+
+    def __init__(self, url: str = None, filepath: Union[str, Path] = None, **kwargs: Any):
+        self.url = url
+        self.filepath = filepath
+        super().__init__(**kwargs)
+        self.run_shelltask = super().run
+        
+
+    @defaults_from_attrs("url", "filepath", "env")
+    def run(self, url: str, filepath: Union[str, Path], env: dict = None,) -> str:
+        """
+        Args:
+            - url (str): url to download
+            - file (str): file for saving fecthed url
+        Returns:
+            str: result from ShellTask.run
+        
+        Raises:
+            - SKIP: if filepath exists
+            - prefect.engine.signals.FAIL: if command has an exit code other
+                than 0
+        """
+        if Path(filepath).exists():
+            raise SKIP(f"File {filepath} already exists.")
+        curl_cmd = f"curl -fL -o {self.filepath} {self.url}"
+        result = self.run_shelltask(command=curl_cmd, env=env)
+        return result
 
 
-# ShellTask is a task from the Task library which will execute a given command in a subprocess
-# and fail if the command returns a non-zero exit code
-download = ShellTask(
-    name="curl_task", max_retries=2, retry_delay=datetime.timedelta(seconds=10)
-)
-
-
-@task
 def unzip(zipfile):
     """
     Extracts zipfile from path in the same directory.
@@ -61,7 +87,6 @@ def unzip(zipfile):
     return files
 
 
-@task
 def create_dir(path: Path) -> Path:
     """
     Checks whether path exists and is directory, and creates it if not.

@@ -164,7 +164,119 @@ huisnmmmer: house number, without any additions</p>
 </div>
 <div class="section" id="module-nimbletl.tasks">
 <span id="nimbletl-tasks-module"></span><h2>nimbletl.tasks module<a class="headerlink" href="#module-nimbletl.tasks" title="Permalink to this headline">¶</a></h2>
-<p>Module with prefects utilities tasks.</p>
+<p>Module with prefects utility functions and tasks.</p>
+<p>Use <cite>prefect.task</cite> to a function into a task in your dataflow pipeline, for example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">unzip_task</span> <span class="pre">=</span> <span class="pre">task(unzip)</span>
+<span class="pre">`</span></code></p>
+<dl class="class">
+<dt id="nimbletl.tasks.CurlDownloadTask">
+<em class="property">class </em><code class="descclassname">nimbletl.tasks.</code><code class="descname">CurlDownloadTask</code><span class="sig-paren">(</span><em>url: str = None</em>, <em>filepath: Union[str</em>, <em>pathlib.Path] = None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nimbletl/tasks.html#CurlDownloadTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimbletl.tasks.CurlDownloadTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">prefect.tasks.shell.ShellTask</span></code></p>
+<p>Task for downloading file using curl.</p>
+<p>Uses <cite>curl -fL -o</cite> that fails silently and follows redirects.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>url (str): url to download</li>
+<li>file (str): file for saving fecthed url</li>
+<li><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: additional keyword arguments to pass to the ShellTask constructor</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Path: path to downloaded file</li>
+</ul>
+</dd>
+<dt>Raises:</dt>
+<dd><ul class="first last simple">
+<li>SKIP: if file exists</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="nimbletl.tasks.CurlDownloadTask.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>url: str, filepath: Union[str, pathlib.Path], env: dict = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/nimbletl/tasks.html#CurlDownloadTask.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimbletl.tasks.CurlDownloadTask.run" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>url (str): url to download</li>
+<li>file (str): file for saving fecthed url</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>str: result from ShellTask.run</dd>
+<dt>Raises:</dt>
+<dd><ul class="first last simple">
+<li>SKIP: if filepath exists</li>
+<li><dl class="first docutils">
+<dt>prefect.engine.signals.FAIL: if command has an exit code other</dt>
+<dd>than 0</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nimbletl.tasks.create_dir">
+<code class="descclassname">nimbletl.tasks.</code><code class="descname">create_dir</code><span class="sig-paren">(</span><em>path: pathlib.Path</em><span class="sig-paren">)</span> &#x2192; pathlib.Path<a class="reference internal" href="_modules/nimbletl/tasks.html#create_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimbletl.tasks.create_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether path exists and is directory, and creates it if not.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>path (Path): path to check</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd><ul class="first last simple">
+<li>Path: new directory</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="nimbletl.tasks.unzip">
+<code class="descclassname">nimbletl.tasks.</code><code class="descname">unzip</code><span class="sig-paren">(</span><em>zipfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nimbletl/tasks.html#unzip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimbletl.tasks.unzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts zipfile from path in the same directory.</p>
+<p>Replaces original zipfile with empty file, so downstream tasks know the file is there.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><ul class="first last simple">
+<li>path: Path-object to zipfile</li>
+<li>zipfile</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>Path-objects of extracted files</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nimbletl.utilities">
+<span id="nimbletl-utilities-module"></span><h2>nimbletl.utilities module<a class="headerlink" href="#module-nimbletl.utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nimbletl.utilities.clean_python_name">
+<code class="descclassname">nimbletl.utilities.</code><code class="descname">clean_python_name</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nimbletl/utilities.html#clean_python_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimbletl.utilities.clean_python_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://gist.github.com/dkapitan/89ff20eeed38e6d9757fef9e09e23c3d">https://gist.github.com/dkapitan/89ff20eeed38e6d9757fef9e09e23c3d</a>
+Method to convert string to clean string for use
+in dataframe column names such :</p>
+<blockquote>
+<div><ol class="lowerroman simple">
+<li>it complies to python 2.x object name standard:
+(letter|’_’)(letter|digit|’_’)</li>
+<li>my preference to use lowercase and adhere
+to practice of case-insensitive column names for data</li>
+</ol>
+</div></blockquote>
+<p>Based on
+<a class="reference external" href="https://stackoverflow.com/questions/3303312/how-do-i-convert-a-string-to-a-valid-variable-name-in-python">https://stackoverflow.com/questions/3303312/how-do-i-convert-a-string-to-a-valid-variable-name-in-python</a></p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-nimbletl">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nimbletl" title="Permalink to this headline">¶</a></h2>
