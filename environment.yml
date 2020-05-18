@@ -27,6 +27,7 @@ dependencies:
   - scikit-learn
   - scipy
   - sqlalchemy
+  - xlrd
 
   # packages for development, no separate dev option in conda
   - black
