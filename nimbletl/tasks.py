@@ -9,13 +9,16 @@ unzip_task = task(unzip)
 
 import datetime
 from pathlib import Path
+import requests
 from typing import Union, Any
 from zipfile import ZipFile
 
-import cbsodata
+from google.cloud import bigquery
 import pandas as pd
+import prefect
 from prefect import task
 from prefect.utilities.tasks import defaults_from_attrs
+from prefect.tasks.gcp.bigquery import BigQueryLoadFile
 from prefect.engine.signals import SKIP
 from prefect.tasks.shell import ShellTask
 from prefect.tasks.templates import StringFormatter
@@ -60,38 +63,7 @@ def curl_cmd(url: str, filepath: Union[str, Path], **kwargs) -> str:
     return f"curl -fL -o {filepath} {url}"
 
 
-def cbsodata_to_gbq(
-    identifier=None, destination_table=None, credentials=None, GCP=None
-):
-    """Loads table from CBS ODATA into BigQuery.
-  
-    Column names are converted to `clean_python_name`. Existing tables are replaced.
-
-    Args:
-        - identifier (str): CBS ODATA identifier
-        - destination_table (str): name of destination table in BigQuery in format `dataset.tablename`
-        - credentials (google.auth.credentials.Credentials): credentials for project and BigQuery
-        - GCP (dataclass): configuration object with `project` and `location` attributes
-
-    Returns:
-        None
-  
-  """
-    # TODO: add kwarg jaar to add verslagjaar as partition or column to allow different versions
-    df = (
-        pd.DataFrame(cbsodata.get_data(identifier))
-        .rename(columns=clean_python_name)
-        .to_gbq(
-            destination_table,
-            project_id=GCP.project,
-            credentials=credentials,
-            if_exists="replace",
-            location=GCP.location,
-        )
-    )
-
-
-def excel_to_gbq(io=None, destination_table=None, credentials=None, GCP=None):
+def excel_to_gbq(io=None, destination=None, credentials=None, GCP=None):
     """Load Excel to BigQuery.
 
     Args:
@@ -101,16 +73,21 @@ def excel_to_gbq(io=None, destination_table=None, credentials=None, GCP=None):
         - GCP (dataclass): configuration object with `project` and `location` attributes
     
     Returns:
-        - None
+        - google.cloud.bigquery.job.LoadJob
     """
-    pd.read_excel(io).rename(columns=clean_python_name).to_gbq(
-        io,
-        destination_table,
-        project_id=GCP.project,
+    df = pd.read_excel(io).rename(columns=clean_python_name)
+    bq = bigquery.Client(credentials=credentials, project=GCP.project)
+    job_config = bigquery.LoadJobConfig()
+    job_config.write_disposition= "WRITE_TRUNCATE"
+    job = bq.load_table_from_dataframe(
+        dataframe=df,
+        destination=destination_table,
+        job_config=job_config,
         credentials=credentials,
-        if_exists="replace",
+        project=GCP.project,
         location=GCP.location,
     )
+    return job
 
 
 def unzip(zipfile):
@@ -152,3 +129,77 @@ def create_dir(path: Path) -> Path:
         print(f"Error trying to find {path}: {error!s}")
         return None
 
+
+def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
+    """Load CBS odata v3 into Google BigQuery.
+
+    For given dataset id, following tables are uploaded into schema (taking `cbs` as default and `83583NED` as example):
+        - `cbs.83583NED_DataProperties: description of topics and dimensions contained in table
+        - `cbs.83583NED_DimensionName: separate dimension tables
+        - `cbs.83583NED_TypedDataSet: the TypedDataset
+        - `cbs.83583NED_CategoryGroups: grouping of dimensions
+
+    See `Handleiding CBS Ope Data Services (v3) <https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf>`_ for details.
+    
+    Args:
+        - id (str): table ID like `83583NED`
+        - third_party (boolean): 'opendata.cbs.nl' is used by default (False). Set to true for dataderden.cbs.nl
+        - schema (str): schema to load data into
+        - credentials: GCP credentials
+        - GCP: config object
+
+    Return:
+        - List[google.cloud.bigquery.job.LoadJob]: 
+    """
+    
+    base_url = {
+        True: f"https://dataderden.cbs.nl/ODataFeed/odata/{id}?$format=json",
+        False: f"https://opendata.cbs.nl/ODataFeed/odata/{id}?$format=json",
+    }
+    urls = {
+        item["name"]: item["url"]
+        for item in requests.get(base_url[third_party]).json()["value"]
+    }
+
+    bq = bigquery.Client(project=GCP.project)
+    job_config = bigquery.LoadJobConfig()
+    job_config.write_disposition = "WRITE_APPEND"
+    jobs = []
+
+    # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
+    # UntypedDataSet is redundant --> use TypedDataSet
+    for key, url in [
+        (k, v) for k, v in urls.items() if k not in ("TableInfos", "UntypedDataSet")
+    ]:
+        url = "?".join((url, "$format=json"))
+        table_name = f"{schema}.{id}_{key}"
+        bq.delete_table(table=table_name, not_found_ok=True)
+
+        i = 0
+        while url:
+            logger = prefect.context.get("logger")
+            logger.info(f"Processing {key} (i = {i}) from {url}")
+            r = requests.get(url).json()
+
+            # odata api contains empty lists as values --> skip these
+            if r["value"]:
+                # DataProperties contains column odata.type --> odata_type
+                df = pd.DataFrame(r["value"]).rename(
+                    columns=lambda s: s.replace(".", "_")
+                )
+                jobs.append(
+                    bq.load_table_from_dataframe(
+                        df,
+                        destination=table_name,
+                        project=GCP.project,
+                        job_config=job_config,
+                    )
+                )
+
+            # each request limited to 10,000 cells
+            if "odata.nextLink" in r:
+                i += 1
+                url = r["odata.nextLink"]
+            else:
+                url = None
+    return jobs

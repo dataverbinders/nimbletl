@@ -1,5 +1,6 @@
 def clean_python_name(s):
     """Method to convert string to Python 2 object name.
+    
     Inteded for use in dataframe column names such :
         i) it complies to python 2.x object name standard:
            (letter|'_')(letter|digit|'_')

@@ -14,7 +14,6 @@ dependencies:
   - nomkl
   - numpy
   - pandas >=1.0.0
-  - pandas-gbq
   - pip
   - prefect[google]
   - pip:

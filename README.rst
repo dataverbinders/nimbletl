@@ -10,7 +10,7 @@ nimbletl
         :target: https://travis-ci.com/dkapitan/nimbletl
 
 .. image:: https://readthedocs.org/projects/nimbletl/badge/?version=latest
-        :target: https://nimbletl.readthedocs.io/en/latest/?badge=latest
+        :target: https://dkapitan.github.io/nimbletl
         :alt: Documentation Status
 
 
@@ -20,7 +20,7 @@ Lightweight Python ETL toolkit using Prefect.
 
 
 * Free software: MIT license
-* Documentation: https://nimbletl.readthedocs.io.
+* Documentation: https://dkapitan.github.io/nimbletl
 
 Introduction
 ------------
@@ -50,6 +50,8 @@ A conda environment is included for convenience, containing most commonly use pa
 .. code:: shell
 
         conda env create -f environment.yml
+
+Try `nl-open-data <https://github.com/dkapitan/nl-open-data>`_ to see nimbletl in action and create a datawarehouse with Dutch open data from various sources.
 
 
 Credits
