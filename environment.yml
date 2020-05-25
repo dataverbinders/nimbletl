@@ -14,7 +14,6 @@ dependencies:
   - nomkl
   - numpy
   - pandas >=1.0.0
-  - pandas-gbq
   - pip
   - prefect[google]
   - pip:
@@ -27,6 +26,7 @@ dependencies:
   - scikit-learn
   - scipy
   - sqlalchemy
+  - xlrd
 
   # packages for development, no separate dev option in conda
   - black
