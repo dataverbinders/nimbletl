@@ -2,9 +2,10 @@
 
 Use `prefect.task` to a function into a task in your dataflow pipeline, for example:
 
-```python
-unzip_task = task(unzip)
-```
+.. code:: python
+
+    unzip_task = task(unzip)
+
 """
 
 import datetime
@@ -134,10 +135,10 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     """Load CBS odata v3 into Google BigQuery.
 
     For given dataset id, following tables are uploaded into schema (taking `cbs` as default and `83583NED` as example):
-        - `cbs.83583NED_DataProperties: description of topics and dimensions contained in table
-        - `cbs.83583NED_DimensionName: separate dimension tables
-        - `cbs.83583NED_TypedDataSet: the TypedDataset
-        - `cbs.83583NED_CategoryGroups: grouping of dimensions
+        - ``cbs.83583NED_DataProperties``: description of topics and dimensions contained in table
+        - ``cbs.83583NED_DimensionName``: separate dimension tables
+        - ``cbs.83583NED_TypedDataSet``: the TypedDataset
+        - ``cbs.83583NED_CategoryGroups``: grouping of dimensions
 
     See `Handleiding CBS Ope Data Services (v3) <https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf>`_ for details.
     
@@ -149,7 +150,7 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
         - GCP: config object
 
     Return:
-        - List[google.cloud.bigquery.job.LoadJob]: 
+        - List[google.cloud.bigquery.job.LoadJob] 
     """
     
     base_url = {

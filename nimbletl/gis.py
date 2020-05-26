@@ -45,9 +45,9 @@ class RDWGS84Converter(object):
     The formulas in this class were based on a white paper by ing. F.H. Schreutelkamp from "Stichting De Koepel" and
     ir. G.L. Strang van Hees, former scholar at TU Delft.
     Unfortunately, as of January 1st 2014, the foundation "De Koepel" has halted all their activities and suspended their
-    website. As the original article can no longer be found on the website, I've made sure to host a backup of it at:
-    http://media.thomasv.nl/2015/07/Transformatieformules.pdf (in Dutch). Please consult this white paper for the origin
-    of the coefficients used below.
+    website. As the original article can no longer be found on the website, I've made sure to host 
+    `a backup of it <http://media.thomasv.nl/2015/07/Transformatieformules.pdf>`_ (in Dutch). Please consult this white
+    paper for the origin of the coefficients used below.
     I take no credit for the formulas used, all I have done was convert the formulas into an easy to work with Python
     class for usage in other projects. All credit for the formulas go to F.H. Schreutelkamp and G.L. Strang van Hees.
     """

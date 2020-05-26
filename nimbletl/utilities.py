@@ -12,9 +12,9 @@ def clean_python_name(s):
 
     Example:
     
-    ```python
+    .. code:: python
         df.rename(columns=clean_python_name)
-    ```
+    
     Args:
         - s (str): string to be converted
     
