@@ -13,6 +13,7 @@ def clean_python_name(s):
     Example:
     
     .. code:: python
+    
         df.rename(columns=clean_python_name)
     
     Args:
