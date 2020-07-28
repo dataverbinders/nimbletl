@@ -130,7 +130,7 @@ def create_dir(path: Path) -> Path:
         print(f"Error trying to find {path}: {error!s}")
         return None
 
-
+@task
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
     """Load CBS odata v3 into Google BigQuery.
 
