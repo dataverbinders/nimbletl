@@ -92,6 +92,8 @@
 <span class="sd">    </span>
 <span class="sd">    Raises:</span>
 <span class="sd">        - SKIP: if filepath exists</span>
+
+<span class="sd">    .. autodata:: nimbletl.tasks.curl_cmd</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="n">SKIP</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
@@ -164,8 +166,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error trying to find </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<span class="nd">@task</span>
-<span class="k">def</span> <span class="nf">cbsodatav3_to_gbq</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">third_party</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;cbs&quot;</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">GCP</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="c1"># @task</span>
+<div class="viewcode-block" id="cbsodatav3_to_gbq"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.tasks.cbsodatav3_to_gbq">[docs]</a><span class="k">def</span> <span class="nf">cbsodatav3_to_gbq</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">third_party</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;cbs&quot;</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">GCP</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Load CBS odata v3 into Google BigQuery.</span>
 
 <span class="sd">    For given dataset id, following tables are uploaded into schema (taking `cbs` as default and `83583NED` as example):</span>
@@ -174,7 +176,7 @@
 <span class="sd">        - ``cbs.83583NED_TypedDataSet``: the TypedDataset</span>
 <span class="sd">        - ``cbs.83583NED_CategoryGroups``: grouping of dimensions</span>
 
-<span class="sd">    See `Handleiding CBS Ope Data Services (v3) &lt;https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf&gt;`_ for details.</span>
+<span class="sd">    See `Handleiding CBS Open Data Services (v3) &lt;https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf&gt;`_ for details.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        - id (str): table ID like `83583NED`</span>
@@ -237,7 +239,7 @@
                 <span class="n">url</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;odata.nextLink&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">jobs</span>
+    <span class="k">return</span> <span class="n">jobs</span></div>
 </pre></div>
 
           </div>

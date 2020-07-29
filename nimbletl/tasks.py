@@ -34,20 +34,22 @@ def curl_cmd(url: str, filepath: Union[str, Path], **kwargs) -> str:
     Uses `curl -fL -o` that fails silently and follows redirects. 
 
     Example:
-        from pathlib import Path
+    ```
+    from pathlib import Path
 
-        from prefect import Parameter, Flow
-        from prefect.tasks.shell import ShellTask
+    from prefect import Parameter, Flow
+    from prefect.tasks.shell import ShellTask
 
-        curl_download = ShellTask(name='curl_download')
+    curl_download = ShellTask(name='curl_download')
 
-        with Flow('test') as flow:
-            filepath = Parameter("filepath", required=True)
-            curl_command = curl_cmd("https://some/url", filepath)
-            curl_download = curl_download(command=curl_command)
-    
-        flow.run(parameters={'filepath': Path.home() / 'test.zip'})
-    
+    with Flow('test') as flow:
+        filepath = Parameter("filepath", required=True)
+        curl_command = curl_cmd("https://some/url", filepath)
+        curl_download = curl_download(command=curl_command)
+
+    flow.run(parameters={'filepath': Path.home() / 'test.zip'})
+    ```
+
     Args:
         - url (str): url to download
         - file (str): file for saving fecthed url
@@ -135,12 +137,13 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     """Load CBS odata v3 into Google BigQuery.
 
     For given dataset id, following tables are uploaded into schema (taking `cbs` as default and `83583NED` as example):
-        - ``cbs.83583NED_DataProperties``: description of topics and dimensions contained in table
-        - ``cbs.83583NED_DimensionName``: separate dimension tables
-        - ``cbs.83583NED_TypedDataSet``: the TypedDataset
-        - ``cbs.83583NED_CategoryGroups``: grouping of dimensions
 
-    See `Handleiding CBS Ope Data Services (v3) <https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf>`_ for details.
+    - cbs.83583NED_DataProperties: description of topics and dimensions contained in table
+    - cbs.83583NED_DimensionName: separate dimension tables
+    - cbs.83583NED_TypedDataSet: the TypedDataset
+    - cbs.83583NED_CategoryGroups: grouping of dimensions
+
+    See Handleiding CBS Open Data Services (v3)[^odatav3] for details.
     
     Args:
         - id (str): table ID like `83583NED`
@@ -151,6 +154,8 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
 
     Return:
         - List[google.cloud.bigquery.job.LoadJob] 
+
+    [^odatav3]: https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf
     """
     
     base_url = {
@@ -159,11 +164,14 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     }
     urls = {
         item["name"]: item["url"]
-        for item in requests.get(base_url[third_party]).json()["value"]
+    for item in requests.get(base_url[third_party]).json()["value"]
     }
+    print(urls)
 
     bq = bigquery.Client(project=GCP.project)
     job_config = bigquery.LoadJobConfig()
+
+    # Need to append because API may return more than 1 rowset (max 10.000 rows per call)
     job_config.write_disposition = "WRITE_APPEND"
     jobs = []
 
