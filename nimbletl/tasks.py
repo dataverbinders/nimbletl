@@ -167,6 +167,14 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     job_config.write_disposition = "WRITE_APPEND"
     jobs = []
 
+    # Using TableInfos for the description of the tables.
+    url_table_info = "?".join((urls["TableInfos"], "$format=json"))
+    table_info = requests.get(url_table_info).json()
+
+    # Get the description of TableInfos.
+    table_desc = table_info["value"][0]["ShortDescription"]
+    job_config.destination_table_description=table_desc
+
     # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
     # UntypedDataSet is redundant --> use TypedDataSet
     for key, url in [
