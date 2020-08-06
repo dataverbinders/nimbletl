@@ -131,12 +131,19 @@ def create_dir(path: Path) -> Path:
         return None
 
 
-def define_schema(definition_list):
+def define_schema(url_data_definition):
+    # Get JSON format of data set.
+    url_data_info = "?".join((url_data_definition, "$format=json"))
+    # print("Data Property:", url_data_info)
+
+    data_info = requests.get(url_data_info).json() # Is of type dict()
+
+    data_info_values = data_info["value"] # Is of type list
 
     schema_description = []
 
     # Only dict's containing the key 'Key' has information about table columns.
-    for i in definition_list:
+    for i in data_info_values:
         if i["Key"] != "":
             
             if "Datatype" in i:
@@ -160,6 +167,59 @@ def define_schema(definition_list):
             )
 
     return schema_description
+
+
+def get_description(url_data_definition):
+    # Get JSON format of data set.
+    url_data_info = "?".join((url_data_definition, "$format=json"))
+    # print("Data Property:", url_data_info)
+
+    data_info = requests.get(url_data_info).json() # Is of type dict()
+
+    data_info_values = data_info["value"] # Is of type list
+
+    dict_description = {}
+
+    # Only dict's containing the key 'Key' has information about table columns.
+    for i in data_info_values:
+        if i["Key"] != "":
+            # Make description shorter, since BigQuery only allows 1024 characters
+            if i["Description"] is not None and len(i["Description"]) > 1024:
+                i["Description"] = i["Description"][:1021] + "..."
+
+            dict_description[i["Key"]] = i["Description"]
+
+
+    return dict_description
+
+
+def column_description(bq_client, schema_bq, table_id, gcp_project, url_data_def):
+    table_typed = bq_client.get_table(f"{gcp_project}.{schema_bq}.{table_id}_TypedDataSet")
+
+    new_schema = []
+
+    descriptions = get_description(url_data_def)
+
+    for i in table_typed.schema:
+        # print("Name:", i.to_api_repr()['name'])
+        # print("Field_type:", i.to_api_repr()['type'])
+        # print("Description:", i.to_api_repr()['description'])
+
+        if i.to_api_repr()['name'] not in descriptions:
+            new_description = ""
+        else:
+            new_description = descriptions[i.to_api_repr()['name']]
+
+        new_schema.append(
+            bigquery.SchemaField(
+                name=i.to_api_repr()['name'],
+                field_type=i.to_api_repr()['type'],
+                description=new_description
+            )
+        )
+
+    table_typed.schema = new_schema
+    bq_client.update_table(table_typed, ["schema"])
 
 
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
@@ -225,12 +285,12 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                     columns=lambda s: s.replace(".", "_")
                 )
 
-                # Define a pre-made schema for the table TypedDataSet which includes descriptions of the columns.
+                """ # Define a pre-made schema for the table TypedDataSet which includes descriptions of the columns.
                 if key == "TypedDataSet":
-                    job_config.schema = define_schema(data_info_values)
+                    job_config.schema = define_schema(urls["DataProperties"])
                 else:
                     # Reset job_config in order to auto-detect a schema.
-                    job_config = bigquery.LoadJobConfig()
+                    job_config = bigquery.LoadJobConfig() """
 
                 jobs.append(
                     bq.load_table_from_dataframe(
@@ -247,4 +307,7 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                 url = r["odata.nextLink"]
             else:
                 url = None
+    
+   column_description(bq, schema, id, GCP.project, urls["DataProperties"])
+
     return jobs
