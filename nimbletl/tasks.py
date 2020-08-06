@@ -131,6 +131,37 @@ def create_dir(path: Path) -> Path:
         return None
 
 
+def define_schema(definition_list):
+
+    schema_description = []
+
+    # Only dict's containing the key 'Key' has information about table columns.
+    for i in definition_list:
+        if i["Key"] != "":
+            
+            if "Datatype" in i:
+                if i["Datatype"] == "Double":
+                    i["Datatype"] = "float"
+                
+                elif i["Datatype"] == "Long":
+                    i["Datatype"] = "integer"
+            else:
+                i["Datatype"] = "string"
+        
+            if i["Description"] is not None and len(i["Description"]) > 1024:
+                i["Description"] = i["Description"][:1021] + "..."
+            
+            schema_description.append(
+                bigquery.SchemaField(
+                    name=i["Key"],
+                    field_type=i["Datatype"],
+                    description=i["Description"]
+                ),
+            )
+
+    return schema_description
+
+
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
     """Load CBS odata v3 into Google BigQuery.
 
@@ -167,6 +198,11 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     job_config.write_disposition = "WRITE_APPEND"
     jobs = []
 
+    # Get JSON format of datas set.
+    url_data_info = "?".join((urls["DataProperties"], "$format=json"))
+    data_info = requests.get(url_data_info).json()
+    data_info_values = data_info["value"]
+
     # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
     # UntypedDataSet is redundant --> use TypedDataSet
     for key, url in [
@@ -188,6 +224,14 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                 df = pd.DataFrame(r["value"]).rename(
                     columns=lambda s: s.replace(".", "_")
                 )
+
+                # Define a pre-made schema for the table TypedDataSet which includes descriptions of the columns.
+                if key == "TypedDataSet":
+                    job_config.schema = define_schema(data_info_values)
+                else:
+                    # Reset job_config in order to auto-detect a schema.
+                    job_config = bigquery.LoadJobConfig()
+
                 jobs.append(
                     bq.load_table_from_dataframe(
                         df,
