@@ -132,15 +132,21 @@ def create_dir(path: Path) -> Path:
 
 
 def table_description(url_table_infos):
+    """Load table description to corresponding table in BigQuery.
+
+    Args:
+        - url_table_infos (str): url of the data set `TableInfos`
+    
+    Returns:
+        - String: table_description
+    """
+
     # Using TableInfos for the description of the tables.
     url_table_info = "?".join((url_table_infos, "$format=json"))
     table_info = requests.get(url_table_info).json()
 
-    # Get the short description from TableInfos.
-    table_description = table_info["value"][0]["ShortDescription"]
-
     # Get the complete description from TableInfos.
-    # big_table_description = table_info["value"][0]["Description"]
+    table_description = table_info["value"][0]["Description"]
     
     return table_description
 
