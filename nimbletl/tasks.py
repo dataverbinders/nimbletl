@@ -131,6 +131,20 @@ def create_dir(path: Path) -> Path:
         return None
 
 
+def table_description(url_table_infos):
+    # Using TableInfos for the description of the tables.
+    url_table_info = "?".join((url_table_infos, "$format=json"))
+    table_info = requests.get(url_table_info).json()
+
+    # Get the short description from TableInfos.
+    table_description = table_info["value"][0]["ShortDescription"]
+
+    # Get the complete description from TableInfos.
+    # big_table_description = table_info["value"][0]["Description"]
+    
+    return table_description
+
+
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
     """Load CBS odata v3 into Google BigQuery.
 
@@ -165,15 +179,8 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     bq = bigquery.Client(project=GCP.project)
     job_config = bigquery.LoadJobConfig()
     job_config.write_disposition = "WRITE_APPEND"
+    job_config.destination_table_description=table_description(urls["TableInfos"])
     jobs = []
-
-    # Using TableInfos for the description of the tables.
-    url_table_info = "?".join((urls["TableInfos"], "$format=json"))
-    table_info = requests.get(url_table_info).json()
-
-    # Get the description of TableInfos.
-    table_desc = table_info["value"][0]["ShortDescription"]
-    job_config.destination_table_description=table_desc
 
     # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
     # UntypedDataSet is redundant --> use TypedDataSet
