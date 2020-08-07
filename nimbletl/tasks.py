@@ -23,6 +23,7 @@ from prefect.tasks.gcp.bigquery import BigQueryLoadFile
 from prefect.engine.signals import SKIP
 from prefect.tasks.shell import ShellTask
 from prefect.tasks.templates import StringFormatter
+from prefect.triggers import all_successful
 
 from nimbletl.utilities import clean_python_name
 
@@ -132,6 +133,15 @@ def create_dir(path: Path) -> Path:
 
 
 def define_schema(url_data_definition):
+    """Define a schema of table in BigQuery, based on the data set DataProperties.
+
+    Args:
+        - url_data_definition (str): url of DataProperties data set as String.
+
+    Return:
+        - List[google.cloud.bigquery.SchemaField] 
+    """
+
     # Get JSON format of data set.
     url_data_info = "?".join((url_data_definition, "$format=json"))
     # print("Data Property:", url_data_info)
@@ -170,6 +180,14 @@ def define_schema(url_data_definition):
 
 
 def get_description(url_data_definition):
+    """Getting the descriptions of columns from a data set given in url_data_definition.
+
+    Args:
+        - url_data_definition (str): url of DataProperties data set as String.
+
+    Return:
+        - dict{'column_name':'description'}
+    """
     # Get JSON format of data set.
     url_data_info = "?".join((url_data_definition, "$format=json"))
     # print("Data Property:", url_data_info)
@@ -193,13 +211,33 @@ def get_description(url_data_definition):
     return dict_description
 
 
-def column_description(bq_client, schema_bq, table_id, gcp_project, url_data_def):
-    table_typed = bq_client.get_table(f"{gcp_project}.{schema_bq}.{table_id}_TypedDataSet")
+@task(trigger=all_successful)
+def column_descriptions(table_id, third_party=False, schema_bq="cbs", GCP=None):
+    """Updates schema defined in schema_bq by adding column descriptions to 'TypedDataSet' tables in Google BigQuery.
+
+    Args:
+        - table_id (str): table ID like `83583NED`
+        - third_party (boolean): 'opendata.cbs.nl' is used by default (False). Set to true for dataderden.cbs.nl
+        - schema_bq (str): schema to load data into
+        - GCP: config object
+    """
+    bq = bigquery.Client(project=GCP.project)
+
+    base_url = {
+        True: f"https://dataderden.cbs.nl/ODataFeed/odata/{table_id}?$format=json",
+        False: f"https://opendata.cbs.nl/ODataFeed/odata/{table_id}?$format=json",
+    }
+
+    for i in requests.get(base_url[third_party]).json()["value"]:
+        if "DataProperties" in i.values():
+            url_data_properties = i["url"]
+
+    table_typed = bq.get_table(f"{GCP.project}.{schema_bq}.{table_id}_TypedDataSet")
 
     new_schema = []
+    descriptions = get_description(url_data_properties)
 
-    descriptions = get_description(url_data_def)
-
+    # for i in table_schema:
     for i in table_typed.schema:
         # print("Name:", i.to_api_repr()['name'])
         # print("Field_type:", i.to_api_repr()['type'])
@@ -219,7 +257,7 @@ def column_description(bq_client, schema_bq, table_id, gcp_project, url_data_def
         )
 
     table_typed.schema = new_schema
-    bq_client.update_table(table_typed, ["schema"])
+    bq.update_table(table_typed, ["schema"])
 
 
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
@@ -257,11 +295,6 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
     job_config = bigquery.LoadJobConfig()
     job_config.write_disposition = "WRITE_APPEND"
     jobs = []
-
-    # Get JSON format of datas set.
-    url_data_info = "?".join((urls["DataProperties"], "$format=json"))
-    data_info = requests.get(url_data_info).json()
-    data_info_values = data_info["value"]
 
     # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
     # UntypedDataSet is redundant --> use TypedDataSet
@@ -307,7 +340,5 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                 url = r["odata.nextLink"]
             else:
                 url = None
-    
-   column_description(bq, schema, id, GCP.project, urls["DataProperties"])
 
     return jobs
