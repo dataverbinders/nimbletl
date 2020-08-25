@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.4" />
+<title>nimbletl.gis API documentation</title>
+<meta name="description" content="Helper functions for geocoding and coordinate conversions." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nimbletl.gis</code></h1>
+</header>
+<section id="section-intro">
+<p>Helper functions for geocoding and coordinate conversions.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Helper functions for geocoding and coordinate conversions.&#34;&#34;&#34;
+
+from builtins import enumerate
+import requests
+import json
+
+
+def get_RDXY(postcode, huisnummer):
+    &#34;&#34;&#34;
+    Fetches X, Y Rijksdriehoek coordinates from BAG.
+
+    postcode:   Dutch zipcode in format &#39;1234AB&#39;
+    huisnmmmer: house number, without any additions
+
+    https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/
+    &#34;&#34;&#34;
+
+    URL = f&#34;https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/BAGv2/MapServer/0/query?where=huisnummer%3D%27{huisnummer}%27+AND+postcode+%3D+%27{postcode}%27&amp;text=&amp;objectIds=&amp;time=&amp;geometry=&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;relationParam=&amp;outFields=&amp;returnGeometry=true&amp;returnTrueCurves=false&amp;maxAllowableOffset=&amp;geometryPrecision=&amp;outSR=28992&amp;having=&amp;returnIdsOnly=false&amp;returnCountOnly=false&amp;orderByFields=&amp;groupByFieldsForStatistics=&amp;outStatistics=&amp;returnZ=false&amp;returnM=false&amp;gdbVersion=&amp;historicMoment=&amp;returnDistinctValues=false&amp;resultOffset=&amp;resultRecordCount=&amp;queryByDistance=&amp;returnExtentOnly=false&amp;datumTransformation=&amp;parameterValues=&amp;rangeValues=&amp;quantizationParameters=&amp;featureEncoding=esriDefault&amp;f=pjson&#34;
+    get_ = requests.get(URL.format(postcode=postcode, huisnummer=str(huisnummer)))
+    try:
+        return get_.json()[&#34;features&#34;][0][&#34;geometry&#34;]
+    except (KeyError, IndexError):
+        return None
+
+
+# Can&#39;t access API reference, so don&#39;t know how to code proper POST request
+#
+# def test(postcode, huisnummer):
+#     URL = &#34;https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/BAGv2/MapServer/0/query&#34;
+#     query = {&#39;postcode&#39;: postcode,
+#     &#39;huisnummer&#39;: huisnummer,
+#     &#39;GeometryType&#39;: &#39;esriGeometryEnvelope&#39;,
+#     &#39;outSR&#39;: &#39;28992&#39;,
+#     &#39;featureEncoding&#39;: &#39;esriDefault&#39;,
+#     &#39;f&#39;: &#39;pjson&#39;
+#     }
+#     print(json.dumps(query))
+#     response = requests.request(&#39;POST&#39;, URL, data=json.dumps(query))
+# print(response.json())
+
+
+
+class RDWGS84Converter(object):
+    &#34;&#34;&#34;
+    The formulas in this class were based on a white paper by ing. F.H. Schreutelkamp from &#34;Stichting De Koepel&#34; and
+    ir. G.L. Strang van Hees, former scholar at TU Delft.
+    Unfortunately, as of January 1st 2014, the foundation &#34;De Koepel&#34; has halted all their activities and suspended their
+    website. As the original article can no longer be found on the website, I&#39;ve made sure to host 
+    `a backup of it &lt;http://media.thomasv.nl/2015/07/Transformatieformules.pdf&gt;`_ (in Dutch). Please consult this white
+    paper for the origin of the coefficients used below.
+    I take no credit for the formulas used, all I have done was convert the formulas into an easy to work with Python
+    class for usage in other projects. All credit for the formulas go to F.H. Schreutelkamp and G.L. Strang van Hees.
+    &#34;&#34;&#34;
+
+    x0 = 155000
+    y0 = 463000
+    phi0 = 52.15517440
+    lam0 = 5.38720621
+
+    # Coefficients or the conversion from RD to WGS84
+    Kp = [0, 2, 0, 2, 0, 2, 1, 4, 2, 4, 1]
+    Kq = [1, 0, 2, 1, 3, 2, 0, 0, 3, 1, 1]
+    Kpq = [
+        3235.65389,
+        -32.58297,
+        -0.24750,
+        -0.84978,
+        -0.06550,
+        -0.01709,
+        -0.00738,
+        0.00530,
+        -0.00039,
+        0.00033,
+        -0.00012,
+    ]
+
+    Lp = [1, 1, 1, 3, 1, 3, 0, 3, 1, 0, 2, 5]
+    Lq = [0, 1, 2, 0, 3, 1, 1, 2, 4, 2, 0, 0]
+    Lpq = [
+        5260.52916,
+        105.94684,
+        2.45656,
+        -0.81885,
+        0.05594,
+        -0.05607,
+        0.01199,
+        -0.00256,
+        0.00128,
+        0.00022,
+        -0.00022,
+        0.00026,
+    ]
+    # Coefficients for the conversion from WGS84 to RD
+    Rp = [0, 1, 2, 0, 1, 3, 1, 0, 2]
+    Rq = [1, 1, 1, 3, 0, 1, 3, 2, 3]
+    Rpq = [
+        190094.945,
+        -11832.228,
+        -114.221,
+        -32.391,
+        -0.705,
+        -2.340,
+        -0.608,
+        -0.008,
+        0.148,
+    ]
+
+    Sp = [1, 0, 2, 1, 3, 0, 2, 1, 0, 1]
+    Sq = [0, 2, 0, 2, 0, 1, 2, 1, 4, 4]
+    Spq = [
+        309056.544,
+        3638.893,
+        73.077,
+        -157.984,
+        59.788,
+        0.433,
+        -6.439,
+        -0.032,
+        0.092,
+        -0.054,
+    ]
+
+    def from_rd(self, x: int, y: int) -&gt; tuple:
+        &#34;&#34;&#34;
+        Converts RD coordinates into WGS84 coordinates
+        &#34;&#34;&#34;
+        dx = 1e-5 * (x - self.x0)
+        dy = 1e-5 * (y - self.y0)
+        latitude = (
+            self.phi0
+            + sum(
+                [
+                    v * dx ** self.Kp[i] * dy ** self.Kq[i]
+                    for i, v in enumerate(self.Kpq)
+                ]
+            )
+            / 3600
+        )
+        longitude = (
+            self.lam0
+            + sum(
+                [
+                    v * dx ** self.Lp[i] * dy ** self.Lq[i]
+                    for i, v in enumerate(self.Lpq)
+                ]
+            )
+            / 3600
+        )
+
+        return latitude, longitude
+
+    # https://github.com/thomasvnl/rd-to-wgs84
+    def from_wgs84(self, latitude: float, longitude: float) -&gt; tuple:
+        &#34;&#34;&#34;
+        Converts WGS84 coordinates into RD coordinates
+        &#34;&#34;&#34;
+        dlat = 0.36 * (latitude - self.phi0)
+        dlon = 0.36 * (longitude - self.lam0)
+        x = self.x0 + sum(
+            [
+                v * dlat ** self.Rp[i] * dlon ** self.Rq[i]
+                for i, v in enumerate(self.Rpq)
+            ]
+        )
+        y = self.y0 + sum(
+            [
+                v * dlat ** self.Sp[i] * dlon ** self.Sq[i]
+                for i, v in enumerate(self.Spq)
+            ]
+        )
+
+        return x, y</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="nimbletl.gis.get_RDXY"><code class="name flex">
+<span>def <span class="ident">get_RDXY</span></span>(<span>postcode, huisnummer)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetches X, Y Rijksdriehoek coordinates from BAG.</p>
+<p>postcode:
+Dutch zipcode in format '1234AB'
+huisnmmmer: house number, without any additions</p>
+<p><a href="https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/">https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_RDXY(postcode, huisnummer):
+    &#34;&#34;&#34;
+    Fetches X, Y Rijksdriehoek coordinates from BAG.
+
+    postcode:   Dutch zipcode in format &#39;1234AB&#39;
+    huisnmmmer: house number, without any additions
+
+    https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/
+    &#34;&#34;&#34;
+
+    URL = f&#34;https://basisregistraties.arcgisonline.nl/arcgis/rest/services/BAG/BAGv2/MapServer/0/query?where=huisnummer%3D%27{huisnummer}%27+AND+postcode+%3D+%27{postcode}%27&amp;text=&amp;objectIds=&amp;time=&amp;geometry=&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;relationParam=&amp;outFields=&amp;returnGeometry=true&amp;returnTrueCurves=false&amp;maxAllowableOffset=&amp;geometryPrecision=&amp;outSR=28992&amp;having=&amp;returnIdsOnly=false&amp;returnCountOnly=false&amp;orderByFields=&amp;groupByFieldsForStatistics=&amp;outStatistics=&amp;returnZ=false&amp;returnM=false&amp;gdbVersion=&amp;historicMoment=&amp;returnDistinctValues=false&amp;resultOffset=&amp;resultRecordCount=&amp;queryByDistance=&amp;returnExtentOnly=false&amp;datumTransformation=&amp;parameterValues=&amp;rangeValues=&amp;quantizationParameters=&amp;featureEncoding=esriDefault&amp;f=pjson&#34;
+    get_ = requests.get(URL.format(postcode=postcode, huisnummer=str(huisnummer)))
+    try:
+        return get_.json()[&#34;features&#34;][0][&#34;geometry&#34;]
+    except (KeyError, IndexError):
+        return None</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nimbletl.gis.RDWGS84Converter"><code class="flex name class">
+<span>class <span class="ident">RDWGS84Converter</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>The formulas in this class were based on a white paper by ing. F.H. Schreutelkamp from "Stichting De Koepel" and
+ir. G.L. Strang van Hees, former scholar at TU Delft.
+Unfortunately, as of January 1st 2014, the foundation "De Koepel" has halted all their activities and suspended their
+website. As the original article can no longer be found on the website, I've made sure to host
+<code>a backup of it &lt;http://media.thomasv.nl/2015/07/Transformatieformules.pdf&gt;</code>_ (in Dutch). Please consult this white
+paper for the origin of the coefficients used below.
+I take no credit for the formulas used, all I have done was convert the formulas into an easy to work with Python
+class for usage in other projects. All credit for the formulas go to F.H. Schreutelkamp and G.L. Strang van Hees.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RDWGS84Converter(object):
+    &#34;&#34;&#34;
+    The formulas in this class were based on a white paper by ing. F.H. Schreutelkamp from &#34;Stichting De Koepel&#34; and
+    ir. G.L. Strang van Hees, former scholar at TU Delft.
+    Unfortunately, as of January 1st 2014, the foundation &#34;De Koepel&#34; has halted all their activities and suspended their
+    website. As the original article can no longer be found on the website, I&#39;ve made sure to host 
+    `a backup of it &lt;http://media.thomasv.nl/2015/07/Transformatieformules.pdf&gt;`_ (in Dutch). Please consult this white
+    paper for the origin of the coefficients used below.
+    I take no credit for the formulas used, all I have done was convert the formulas into an easy to work with Python
+    class for usage in other projects. All credit for the formulas go to F.H. Schreutelkamp and G.L. Strang van Hees.
+    &#34;&#34;&#34;
+
+    x0 = 155000
+    y0 = 463000
+    phi0 = 52.15517440
+    lam0 = 5.38720621
+
+    # Coefficients or the conversion from RD to WGS84
+    Kp = [0, 2, 0, 2, 0, 2, 1, 4, 2, 4, 1]
+    Kq = [1, 0, 2, 1, 3, 2, 0, 0, 3, 1, 1]
+    Kpq = [
+        3235.65389,
+        -32.58297,
+        -0.24750,
+        -0.84978,
+        -0.06550,
+        -0.01709,
+        -0.00738,
+        0.00530,
+        -0.00039,
+        0.00033,
+        -0.00012,
+    ]
+
+    Lp = [1, 1, 1, 3, 1, 3, 0, 3, 1, 0, 2, 5]
+    Lq = [0, 1, 2, 0, 3, 1, 1, 2, 4, 2, 0, 0]
+    Lpq = [
+        5260.52916,
+        105.94684,
+        2.45656,
+        -0.81885,
+        0.05594,
+        -0.05607,
+        0.01199,
+        -0.00256,
+        0.00128,
+        0.00022,
+        -0.00022,
+        0.00026,
+    ]
+    # Coefficients for the conversion from WGS84 to RD
+    Rp = [0, 1, 2, 0, 1, 3, 1, 0, 2]
+    Rq = [1, 1, 1, 3, 0, 1, 3, 2, 3]
+    Rpq = [
+        190094.945,
+        -11832.228,
+        -114.221,
+        -32.391,
+        -0.705,
+        -2.340,
+        -0.608,
+        -0.008,
+        0.148,
+    ]
+
+    Sp = [1, 0, 2, 1, 3, 0, 2, 1, 0, 1]
+    Sq = [0, 2, 0, 2, 0, 1, 2, 1, 4, 4]
+    Spq = [
+        309056.544,
+        3638.893,
+        73.077,
+        -157.984,
+        59.788,
+        0.433,
+        -6.439,
+        -0.032,
+        0.092,
+        -0.054,
+    ]
+
+    def from_rd(self, x: int, y: int) -&gt; tuple:
+        &#34;&#34;&#34;
+        Converts RD coordinates into WGS84 coordinates
+        &#34;&#34;&#34;
+        dx = 1e-5 * (x - self.x0)
+        dy = 1e-5 * (y - self.y0)
+        latitude = (
+            self.phi0
+            + sum(
+                [
+                    v * dx ** self.Kp[i] * dy ** self.Kq[i]
+                    for i, v in enumerate(self.Kpq)
+                ]
+            )
+            / 3600
+        )
+        longitude = (
+            self.lam0
+            + sum(
+                [
+                    v * dx ** self.Lp[i] * dy ** self.Lq[i]
+                    for i, v in enumerate(self.Lpq)
+                ]
+            )
+            / 3600
+        )
+
+        return latitude, longitude
+
+    # https://github.com/thomasvnl/rd-to-wgs84
+    def from_wgs84(self, latitude: float, longitude: float) -&gt; tuple:
+        &#34;&#34;&#34;
+        Converts WGS84 coordinates into RD coordinates
+        &#34;&#34;&#34;
+        dlat = 0.36 * (latitude - self.phi0)
+        dlon = 0.36 * (longitude - self.lam0)
+        x = self.x0 + sum(
+            [
+                v * dlat ** self.Rp[i] * dlon ** self.Rq[i]
+                for i, v in enumerate(self.Rpq)
+            ]
+        )
+        y = self.y0 + sum(
+            [
+                v * dlat ** self.Sp[i] * dlon ** self.Sq[i]
+                for i, v in enumerate(self.Spq)
+            ]
+        )
+
+        return x, y</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="nimbletl.gis.RDWGS84Converter.Kp"><code class="name">var <span class="ident">Kp</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Kpq"><code class="name">var <span class="ident">Kpq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Kq"><code class="name">var <span class="ident">Kq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Lp"><code class="name">var <span class="ident">Lp</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Lpq"><code class="name">var <span class="ident">Lpq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Lq"><code class="name">var <span class="ident">Lq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Rp"><code class="name">var <span class="ident">Rp</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Rpq"><code class="name">var <span class="ident">Rpq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Rq"><code class="name">var <span class="ident">Rq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Sp"><code class="name">var <span class="ident">Sp</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Spq"><code class="name">var <span class="ident">Spq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.Sq"><code class="name">var <span class="ident">Sq</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.lam0"><code class="name">var <span class="ident">lam0</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.phi0"><code class="name">var <span class="ident">phi0</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.x0"><code class="name">var <span class="ident">x0</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.y0"><code class="name">var <span class="ident">y0</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="nimbletl.gis.RDWGS84Converter.from_rd"><code class="name flex">
+<span>def <span class="ident">from_rd</span></span>(<span>self, x: int, y: int) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts RD coordinates into WGS84 coordinates</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_rd(self, x: int, y: int) -&gt; tuple:
+    &#34;&#34;&#34;
+    Converts RD coordinates into WGS84 coordinates
+    &#34;&#34;&#34;
+    dx = 1e-5 * (x - self.x0)
+    dy = 1e-5 * (y - self.y0)
+    latitude = (
+        self.phi0
+        + sum(
+            [
+                v * dx ** self.Kp[i] * dy ** self.Kq[i]
+                for i, v in enumerate(self.Kpq)
+            ]
+        )
+        / 3600
+    )
+    longitude = (
+        self.lam0
+        + sum(
+            [
+                v * dx ** self.Lp[i] * dy ** self.Lq[i]
+                for i, v in enumerate(self.Lpq)
+            ]
+        )
+        / 3600
+    )
+
+    return latitude, longitude</code></pre>
+</details>
+</dd>
+<dt id="nimbletl.gis.RDWGS84Converter.from_wgs84"><code class="name flex">
+<span>def <span class="ident">from_wgs84</span></span>(<span>self, latitude: float, longitude: float) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts WGS84 coordinates into RD coordinates</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_wgs84(self, latitude: float, longitude: float) -&gt; tuple:
+    &#34;&#34;&#34;
+    Converts WGS84 coordinates into RD coordinates
+    &#34;&#34;&#34;
+    dlat = 0.36 * (latitude - self.phi0)
+    dlon = 0.36 * (longitude - self.lam0)
+    x = self.x0 + sum(
+        [
+            v * dlat ** self.Rp[i] * dlon ** self.Rq[i]
+            for i, v in enumerate(self.Rpq)
+        ]
+    )
+    y = self.y0 + sum(
+        [
+            v * dlat ** self.Sp[i] * dlon ** self.Sq[i]
+            for i, v in enumerate(self.Spq)
+        ]
+    )
+
+    return x, y</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nimbletl" href="index.html">nimbletl</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="nimbletl.gis.get_RDXY" href="#nimbletl.gis.get_RDXY">get_RDXY</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nimbletl.gis.RDWGS84Converter" href="#nimbletl.gis.RDWGS84Converter">RDWGS84Converter</a></code></h4>
+<ul class="two-column">
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Kp" href="#nimbletl.gis.RDWGS84Converter.Kp">Kp</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Kpq" href="#nimbletl.gis.RDWGS84Converter.Kpq">Kpq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Kq" href="#nimbletl.gis.RDWGS84Converter.Kq">Kq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Lp" href="#nimbletl.gis.RDWGS84Converter.Lp">Lp</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Lpq" href="#nimbletl.gis.RDWGS84Converter.Lpq">Lpq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Lq" href="#nimbletl.gis.RDWGS84Converter.Lq">Lq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Rp" href="#nimbletl.gis.RDWGS84Converter.Rp">Rp</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Rpq" href="#nimbletl.gis.RDWGS84Converter.Rpq">Rpq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Rq" href="#nimbletl.gis.RDWGS84Converter.Rq">Rq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Sp" href="#nimbletl.gis.RDWGS84Converter.Sp">Sp</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Spq" href="#nimbletl.gis.RDWGS84Converter.Spq">Spq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.Sq" href="#nimbletl.gis.RDWGS84Converter.Sq">Sq</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.from_rd" href="#nimbletl.gis.RDWGS84Converter.from_rd">from_rd</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.from_wgs84" href="#nimbletl.gis.RDWGS84Converter.from_wgs84">from_wgs84</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.lam0" href="#nimbletl.gis.RDWGS84Converter.lam0">lam0</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.phi0" href="#nimbletl.gis.RDWGS84Converter.phi0">phi0</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.x0" href="#nimbletl.gis.RDWGS84Converter.x0">x0</a></code></li>
+<li><code><a title="nimbletl.gis.RDWGS84Converter.y0" href="#nimbletl.gis.RDWGS84Converter.y0">y0</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+</footer>
+</body>
+</html>

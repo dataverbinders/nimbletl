@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>nimbletl.tasks &#8212; nimbletl 0.1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -93,6 +92,8 @@
 <span class="sd">    </span>
 <span class="sd">    Raises:</span>
 <span class="sd">        - SKIP: if filepath exists</span>
+
+<span class="sd">    .. autodata:: nimbletl.tasks.curl_cmd</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="n">SKIP</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
@@ -165,7 +166,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error trying to find </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-
+<span class="c1"># @task</span>
 <div class="viewcode-block" id="cbsodatav3_to_gbq"><a class="viewcode-back" href="../../nimbletl.html#nimbletl.tasks.cbsodatav3_to_gbq">[docs]</a><span class="k">def</span> <span class="nf">cbsodatav3_to_gbq</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">third_party</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;cbs&quot;</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">GCP</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Load CBS odata v3 into Google BigQuery.</span>
 
@@ -175,7 +176,7 @@
 <span class="sd">        - ``cbs.83583NED_TypedDataSet``: the TypedDataset</span>
 <span class="sd">        - ``cbs.83583NED_CategoryGroups``: grouping of dimensions</span>
 
-<span class="sd">    See `Handleiding CBS Ope Data Services (v3) &lt;https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf&gt;`_ for details.</span>
+<span class="sd">    See `Handleiding CBS Open Data Services (v3) &lt;https://www.cbs.nl/-/media/statline/documenten/handleiding-cbs-opendata-services.pdf&gt;`_ for details.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        - id (str): table ID like `83583NED`</span>
@@ -278,17 +279,15 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -305,7 +304,7 @@
       &copy;2020, Daniel Kapitan.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
