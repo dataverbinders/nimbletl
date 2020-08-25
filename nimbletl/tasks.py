@@ -23,6 +23,7 @@ from prefect.tasks.gcp.bigquery import BigQueryLoadFile
 from prefect.engine.signals import SKIP
 from prefect.tasks.shell import ShellTask
 from prefect.tasks.templates import StringFormatter
+from prefect.triggers import all_successful
 
 from nimbletl.utilities import clean_python_name
 
@@ -133,6 +134,134 @@ def create_dir(path: Path) -> Path:
         return None
 
 
+def define_schema(url_data_definition):
+    """Define a schema of table in BigQuery, based on the data set DataProperties.
+
+    Args:
+        - url_data_definition (str): url of DataProperties data set as String.
+
+    Return:
+        - List[google.cloud.bigquery.SchemaField] 
+    """
+
+    # Get JSON format of data set.
+    url_data_info = "?".join((url_data_definition, "$format=json"))
+    # print("Data Property:", url_data_info)
+
+    data_info = requests.get(url_data_info).json() # Is of type dict()
+
+    data_info_values = data_info["value"] # Is of type list
+
+    schema_description = []
+
+    # Only dict's containing the key 'Key' has information about table columns.
+    for i in data_info_values:
+        if i["Key"] != "":
+            
+            if "Datatype" in i:
+                if i["Datatype"] == "Double":
+                    i["Datatype"] = "float"
+                
+                elif i["Datatype"] == "Long":
+                    i["Datatype"] = "integer"
+            else:
+                i["Datatype"] = "string"
+        
+            if i["Description"] is not None and len(i["Description"]) > 1024:
+                i["Description"] = i["Description"][:1021] + "..."
+            
+            schema_description.append(
+                bigquery.SchemaField(
+                    name=i["Key"],
+                    field_type=i["Datatype"],
+                    description=i["Description"]
+                ),
+            )
+
+    return schema_description
+
+
+def get_description(url_data_definition):
+    """Getting the descriptions of columns from a data set given in url_data_definition.
+
+    Args:
+        - url_data_definition (str): url of DataProperties data set as String.
+
+    Return:
+        - dict{'column_name':'description'}
+    """
+    # Get JSON format of data set.
+    url_data_info = "?".join((url_data_definition, "$format=json"))
+    # print("Data Property:", url_data_info)
+
+    data_info = requests.get(url_data_info).json() # Is of type dict()
+
+    data_info_values = data_info["value"] # Is of type list
+
+    dict_description = {}
+
+    # Only dict's containing the key 'Key' has information about table columns.
+    for i in data_info_values:
+        if i["Key"] != "":
+            # Make description shorter, since BigQuery only allows 1024 characters
+            if i["Description"] is not None and len(i["Description"]) > 1024:
+                i["Description"] = i["Description"][:1021] + "..."
+
+            dict_description[i["Key"]] = i["Description"]
+
+
+    return dict_description
+
+
+@task(trigger=all_successful)
+def column_descriptions(table_id, third_party=False, schema_bq="cbs", GCP=None):
+    """Updates schema defined in schema_bq by adding column descriptions to 'TypedDataSet' tables in Google BigQuery.
+
+    Args:
+        - table_id (str): table ID like `83583NED`
+        - third_party (boolean): 'opendata.cbs.nl' is used by default (False). Set to true for dataderden.cbs.nl
+        - schema_bq (str): schema to load data into
+        - GCP: config object
+    """
+    bq = bigquery.Client(project=GCP.project)
+
+    base_url = {
+        True: f"https://dataderden.cbs.nl/ODataFeed/odata/{table_id}?$format=json",
+        False: f"https://opendata.cbs.nl/ODataFeed/odata/{table_id}?$format=json",
+    }
+
+    for i in requests.get(base_url[third_party]).json()["value"]:
+        if "DataProperties" in i.values():
+            url_data_properties = i["url"]
+
+    table_typed = bq.get_table(f"{GCP.project}.{schema_bq}.{table_id}_TypedDataSet")
+
+    new_schema = []
+    descriptions = get_description(url_data_properties)
+
+    # for i in table_schema:
+    for i in table_typed.schema:
+        # print("Name:", i.to_api_repr()['name'])
+        # print("Field_type:", i.to_api_repr()['type'])
+        # print("Description:", i.to_api_repr()['description'])
+
+        if i.to_api_repr()['name'] not in descriptions:
+            new_description = ""
+        else:
+            new_description = descriptions[i.to_api_repr()['name']]
+
+        new_schema.append(
+            bigquery.SchemaField(
+                name=i.to_api_repr()['name'],
+                field_type=i.to_api_repr()['type'],
+                description=new_description
+            )
+        )
+
+    table_typed.schema = new_schema
+    bq.update_table(table_typed, ["schema"])
+
+
 def table_description(url_table_infos):
     """Load table description to corresponding table in BigQuery.
 
@@ -218,6 +347,14 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                 df = pd.DataFrame(r["value"]).rename(
                     columns=lambda s: s.replace(".", "_")
                 )
+
+                """ # Define a pre-made schema for the table TypedDataSet which includes descriptions of the columns.
+                if key == "TypedDataSet":
+                    job_config.schema = define_schema(urls["DataProperties"])
+                else:
+                    # Reset job_config in order to auto-detect a schema.
+                    job_config = bigquery.LoadJobConfig() """
+
                 jobs.append(
                     bq.load_table_from_dataframe(
                         df,
@@ -233,4 +370,5 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
                 url = r["odata.nextLink"]
             else:
                 url = None
+
     return jobs
