@@ -132,6 +132,27 @@ def create_dir(path: Path) -> Path:
         print(f"Error trying to find {path}: {error!s}")
         return None
 
+
+def table_description(url_table_infos):
+    """Load table description to corresponding table in BigQuery.
+
+    Args:
+        - url_table_infos (str): url of the data set `TableInfos`
+    
+    Returns:
+        - String: table_description
+    """
+
+    # Using TableInfos for the description of the tables.
+    url_table_info = "?".join((url_table_infos, "$format=json"))
+    table_info = requests.get(url_table_info).json()
+
+    # Get the complete description from TableInfos.
+    table_description = table_info["value"][0]["Description"]
+    
+    return table_description
+
+
 @task
 def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP=None):
     """Load CBS odata v3 into Google BigQuery.
@@ -173,6 +194,7 @@ def cbsodatav3_to_gbq(id, third_party=False, schema="cbs", credentials=None, GCP
 
     # Need to append because API may return more than 1 rowset (max 10.000 rows per call)
     job_config.write_disposition = "WRITE_APPEND"
+    job_config.destination_table_description=table_description(urls["TableInfos"])
     jobs = []
 
     # TableInfos is redundant --> use https://opendata.cbs.nl/ODataCatalog/Tables?$format=json
